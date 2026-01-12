@@ -1,24 +1,20 @@
+
 import { useState } from 'react';
 
 function Counter() {
-  // Initialize state
   const [count, setCount] = useState(0);
 
   return (
-    <div style={{ margin: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <p style={{ fontSize: '18px', fontWeight: 'bold' }}>
-        Current Count: {count}
-      </p>
-
+    <div>
+      <h2>Counter App</h2>
+      <p>Current Count: {count}</p>
       <button onClick={() => setCount(count + 1)}>
         Increment
       </button>
-
-      <button onClick={() => setCount(count - 1)} style={{ marginLeft: '5px' }}>
+      <button onClick={() => setCount(count - 1)}>
         Decrement
       </button>
-
-      <button onClick={() => setCount(0)} style={{ marginLeft: '5px' }}>
+      <button onClick={() => setCount(0)}>
         Reset
       </button>
     </div>
