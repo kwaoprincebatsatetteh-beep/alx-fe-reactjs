@@ -1,41 +1,42 @@
+import useRecipeStore from "./recipeStore";
+import { Link } from "react-router-dom";
 
-import { useParams } from 'react-router-dom';
-import useRecipeStore from './recipeStore';
-
-const RecipeDetails = () => {
-  const { id } = useParams();
-  const recipeId = Number(id);
-
-  const recipe = useRecipeStore((state) =>
-    state.recipes.find((r) => r.id === recipeId)
+const RecipeList = () => {
+  const recipes = useRecipeStore((state) => state.recipes);
+  const searchTerm = useRecipeStore((state) => state.searchTerm);
+  const getFilteredRecipes = useRecipeStore(
+    (state) => state.getFilteredRecipes,
   );
 
-  const favorites = useRecipeStore((state) => state.favorites);
-  const addFavorite = useRecipeStore((state) => state.addFavorite);
-  const removeFavorite = useRecipeStore(
-    (state) => state.removeFavorite
-  );
-
-  if (!recipe) return <p>Recipe not found</p>;
-
-  const isFavorite = favorites.includes(recipeId);
+  const displayedRecipes = searchTerm ? getFilteredRecipes() : recipes;
 
   return (
-    <div>
-      <h1>{recipe.title}</h1>
-      <p>{recipe.description}</p>
-
-      {isFavorite ? (
-        <button onClick={() => removeFavorite(recipeId)}>
-          Remove from Favorites
-        </button>
+    <div className="recipe-list">
+      <h2>Recipes</h2>
+      {displayedRecipes.length === 0 ? (
+        <p>
+          No recipes found.{" "}
+          {searchTerm
+            ? "Try a different search term."
+            : "Add your first recipe!"}
+        </p>
       ) : (
-        <button onClick={() => addFavorite(recipeId)}>
-          Add to Favorites
-        </button>
+        <div className="recipes-grid">
+          {displayedRecipes.map((recipe) => (
+            <div key={recipe.id} className="recipe-card">
+              <h3>{recipe.title}</h3>
+              <p>{recipe.description}</p>
+              <div className="recipe-actions">
+                <Link to={`/recipe/${recipe.id}`} className="btn-view">
+                  View Details
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
 };
 
-export default RecipeDetails;
+export default RecipeList;
