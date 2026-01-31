@@ -1,83 +1,99 @@
 
-import { useState } from "react";
-import fetchUserData from "../services/githubService";
+import { useState } from 'react';
+import { fetchUserData } from '../services/githubService';
 
 function Search() {
-  const [username, setUserName] = useState("")
-  const [location, setLocation] = useState("");
-  const [repoCount, setRepoCount] = useState("")
-  const [user, setUser] = useState([]);
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(false)
+  const [username, setUsername] = useState('');
+  const [location, setLocation] = useState('');
+  const [minRepos, setMinRepos] = useState('');
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(false)
-    
-    try{  
-    const data = await fetchUserData(username, location, repoCount);
-    setUser([...user, ...data.items]);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError('');
+    setUsers([]);
 
-    console.log(user)
-
-    } catch(error) {
-      setError(true)
+    try {
+      const results = await fetchUserData(username, location, minRepos);
+      setUsers(results);
+    } catch (err) {
+      setError('Looks like we cant find the user');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-   
-  }
+  };
 
-  return(
-    <form onSubmit={handleSubmit} >
-      <div className="flex flex-col gap-y-5 items-center w-50 my-0 mx-auto">
-        <div>
-          <label htmlFor="user-name">Username</label>
-          <input type="text"
-           placeholder="Enter github username here...."
-           value={username}
-           onChange={(e) => setUserName(e.target.value)} className="border w-100" id="user-name"/>
-        </div>
+  return (
+    <div className="max-w-xl mx-auto">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-4 rounded shadow space-y-4"
+      >
+        <input
+          type="text"
+          placeholder="GitHub username"
+          className="w-full border p-2 rounded"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
 
-         <div>
-          <label htmlFor="location">Location</label>
-          <input type="text"
-           placeholder="Enter user location" 
-           className="border w-100" 
-           id="location"
-           value={location}
-           onChange={(e) => setLocation(e.target.value)}
-           />
+        <input
+          type="text"
+          placeholder="Location"
+          className="w-full border p-2 rounded"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        />
+
+        <input
+          type="number"
+          placeholder="Minimum repositories"
+          className="w-full border p-2 rounded"
+          value={minRepos}
+          onChange={(e) => setMinRepos(e.target.value)}
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+        >
+          Search
+        </button>
+      </form>
+
+      {loading && <p className="mt-4">Loading...</p>}
+      {error && <p className="mt-4 text-red-600">{error}</p>}
+
+      <div className="mt-6 space-y-4">
+        {users.map((user) => (
+          <div
+            key={user.id}
+            className="flex items-center gap-4 border p-4 rounded"
+          >
+            <img
+              src={user.avatar_url}
+              alt={user.login}
+              className="w-16 h-16 rounded-full"
+            />
+            <div>
+              <h3 className="font-bold">{user.login}</h3>
+              <a
+                href={user.html_url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-500 underline"
+              >
+                View Profile
+              </a>
+            </div>
           </div>
-  
-         <div>
-          <label htmlFor="repo-count">Repository Count</label>
-          <input type="text"
-           className="border w-100" 
-           id="repo-count"
-           value={repoCount}
-           onChange={(e) => setRepoCount(e.target.value)}
-           />
-          </div>
-
-          <button type="submit" className="m-auto border px-4 py-2 bg-black text-white cursor-pointer">Search</button>
+        ))}
       </div>
-     
-
-
-      {isLoading && <p>Loading....</p>}
-      {error && <p>Looks like we cant find the user</p>}
-      {user && (
-        <div className="my-19 mx-auto w-50">
-          <img src={user.avatar_url} alt="" className="w-50"/>
-          <h2 className="">{user.login}</h2>
-          <a href={user.html_url} className="text-blue-600">View profile</a>
-        </div>
-      )
-      }
-    </form>
-  )
+    </div>
+  );
 }
 
-export default Search
+export default Search;
