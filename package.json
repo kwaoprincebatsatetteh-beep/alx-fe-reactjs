@@ -3,7 +3,11 @@
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.13.4",
     "react-router-dom": "^7.12.0",
-    "tailwindcss": "^4.1.18",
     "zustand": "^5.0.10"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.24",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18"
   }
 }
